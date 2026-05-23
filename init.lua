@@ -1017,5 +1017,28 @@ vim.keymap.set('n', '<C-s>', ':update<CR>', { desc = 'Write buffer' })
 
 vim.keymap.set('v', 's', 'y:s/<C-R>0//g<Left><Left>', { desc = 'Replace highlighted text' })
 
+vim.opt.expandtab = true
+
+local file_opts = {
+  typescript = {
+    tabstop = 4,
+    expandtab = true,
+    shiftwidth = 4,
+  },
+}
+
+vim.api.nvim_create_autocmd('FileType', {
+  desc = 'Set options based on the filetype',
+  group = vim.api.nvim_create_augroup('filetype', { clear = true }),
+  callback = function(event)
+    local opts = file_opts[event.match]
+    if opts ~= nil then
+      for key, value in pairs(opts) do
+        vim.opt[key] = value
+      end
+    end
+  end,
+})
+
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
