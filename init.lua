@@ -97,9 +97,9 @@ do
   --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
   vim.g.mapleader = ' '
   vim.g.maplocalleader = ' '
-
+  --
   -- Set to true if you have a Nerd Font installed and selected in the terminal
-  vim.g.have_nerd_font = false
+  vim.g.have_nerd_font = true
 
   -- [[ Setting options ]]
   --  See `:help vim.o`
@@ -204,6 +204,7 @@ do
   }
 
   vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+  vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open diagnostic float' })
 
   -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
   -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -972,6 +973,33 @@ do
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   -- require 'custom.plugins'
 end
+
+vim.keymap.set('n', '<C-s>', ':update<CR>', { desc = 'Write buffer' })
+
+vim.keymap.set('v', 's', 'y:s/<C-R>0//g<Left><Left>', { desc = 'Replace highlighted text' })
+
+vim.opt.expandtab = true
+
+local file_opts = {
+  typescript = {
+    tabstop = 4,
+    expandtab = true,
+    shiftwidth = 4,
+  },
+}
+
+vim.api.nvim_create_autocmd('FileType', {
+  desc = 'Set options based on the filetype',
+  group = vim.api.nvim_create_augroup('filetype', { clear = true }),
+  callback = function(event)
+    local opts = file_opts[event.match]
+    if opts ~= nil then
+      for key, value in pairs(opts) do
+        vim.opt[key] = value
+      end
+    end
+  end,
+})
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
